@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+requests
+google-genai
+nltk
+python-dotenv
+pydantic
+praw
+yfinance

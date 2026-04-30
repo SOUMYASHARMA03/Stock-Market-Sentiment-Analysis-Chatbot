@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Stock Sentiment & Analyst Dashboard</title>
+    <meta name="description" content="Real-time stock sentiment analysis with AI-powered insights, financial metrics, and live news feed.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
+</head>
+<body>
+
+    <!-- Custom Tooltip Element -->
+    <div class="custom-tooltip" id="custom-tooltip"></div>
+
+    <div class="app-container">
+        <main class="main-content">
+            <!-- Top Navigation -->
+            <header class="top-nav glass-panel">
+                <div class="nav-brand">
+                    <span class="brand-name">StockSense</span>
+                </div>
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="stock-input" placeholder="Search company or ticker (e.g. Apple, RELIANCE.NS)" onkeydown="handleSearchEnter(event)" oninput="toggleClearBtn()">
+                        <span id="clear-search" class="clear-search" onclick="clearSearch()">✖</span>
+                    </div>
+                    <button onclick="analyzeStock()" id="analyze-btn">
+                        <span>Analyze</span>
+                    </button>
+                </div>
+                <button class="help-btn" onclick="toggleHelp()" aria-label="Help Center">📖 Help</button>
+            </header>
+
+            <!-- Loader -->
+            <div id="loader-overlay" class="loader-overlay" style="display: none;">
+                <div class="spinner"></div>
+                <p>Fetching Real-time Data...</p>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid" id="dashboard" style="display: none;">
+
+                <!-- Company Info Header -->
+                <div class="widget header-widget glass-panel">
+                    <div class="company-info">
+                        <h2 id="company-name-display">Company Name</h2>
+                        <span id="company-symbol-display" class="symbol-badge">TICKER</span>
+                    </div>
+                    <div class="header-right" id="financial-price-area" style="display: none;">
+                        <h2 id="current-price" class="price-large">—</h2>
+                        <div class="price-row">
+                            <span id="price-trend-arrow" class="trend-arrow"></span>
+                            <span id="price-change" class="price-change neutral">—</span>
+                            <span id="price-trend-label" class="trend-label"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GROUPED METRICS WIDGET -->
+                <div class="widget metrics-container glass-panel" id="financial-widget" style="display: none;">
+
+                    <!-- Section 1: Current Performance -->
+                    <div class="metric-section">
+                        <div class="section-label">
+                            <span class="section-icon">⚡</span>
+                            <h4>Current Performance</h4>
+                        </div>
+                        <div class="metrics-grid">
+                            <div class="metric-card" data-tip="open">
+                                <span class="metric-label">Open</span>
+                                <strong class="metric-value" id="metric-open">N/A</strong>
+                            </div>
+                            <div class="metric-card" data-tip="high">
+                                <span class="metric-label">High</span>
+                                <strong class="metric-value positive-val" id="metric-high">N/A</strong>
+                            </div>
+                            <div class="metric-card" data-tip="low">
+                                <span class="metric-label">Low</span>
+                                <strong class="metric-value negative-val" id="metric-low">N/A</strong>
+                            </div>
+                            <div class="metric-card" data-tip="mkt_cap">
+                                <span class="metric-label">Mkt Cap</span>
+                                <strong class="metric-value" id="metric-mcap">N/A</strong>
+                            </div>
+                            <div class="metric-card" data-tip="avg_vol">
+                                <span class="metric-label">Avg Volume</span>
+                                <strong class="metric-value" id="metric-vol">N/A</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Section 2: Company Health -->
+                    <div class="metric-section">
+                        <div class="section-label">
+                            <span class="section-icon">🏢</span>
+                            <h4>Company Health</h4>
+                        </div>
+                        <div class="metrics-grid">
+                            <div class="metric-card" data-tip="pe">
+                                <span class="metric-label">P/E Ratio</span>
+                                <strong class="metric-value" id="metric-pe">N/A</strong>
+                            </div>
+                            <div class="metric-card" data-tip="eps">
+                                <span class="metric-label">EPS</span>
+                                <strong class="metric-value" id="metric-eps">N/A</strong>
+                            </div>
+                            <div class="metric-card" data-tip="div_yield">
+                                <span class="metric-label">Div Yield</span>
+                                <strong class="metric-value" id="metric-div">N/A</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Section 3: Risk Assessment -->
+                    <div class="metric-section">
+                        <div class="section-label">
+                            <span class="section-icon">⚠️</span>
+                            <h4>Risk Assessment</h4>
+                        </div>
+                        <div class="metrics-grid">
+                            <div class="metric-card" data-tip="beta">
+                                <span class="metric-label">Beta</span>
+                                <strong class="metric-value" id="metric-beta">N/A</strong>
+                            </div>
+                            <div class="metric-card" data-tip="52h">
+                                <span class="metric-label">52W High</span>
+                                <strong class="metric-value positive-val" id="metric-52high">N/A</strong>
+                            </div>
+                            <div class="metric-card" data-tip="52l">
+                                <span class="metric-label">52W Low</span>
+                                <strong class="metric-value negative-val" id="metric-52low">N/A</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price History Chart — directly below stock details -->
+                <div class="widget history-widget glass-panel" id="history-widget" style="display:none;">
+                    <div class="history-header">
+                        <div>
+                            <h3 class="widget-title">Price History</h3>
+                            <p class="history-subtitle" id="history-subtitle">Last 5 Years of price movement</p>
+                        </div>
+                        <div class="history-controls">
+                            <select id="period-dropdown" class="period-dropdown" onchange="loadHistoryFromDropdown(this)">
+                                <option value="1d">📅 Today</option>
+                                <option value="1wk">📅 Last 1 Week</option>
+                                <option value="1mo">📅 Last 1 Month</option>
+                                <option value="3mo">📅 Last 3 Months</option>
+                                <option value="1y">📅 Last 1 Year</option>
+                                <option value="5y" selected>📅 Last 5 Years</option>
+                                <option value="max">📅 Max (All Time)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="history-stats" id="history-stats"></div>
+                    <div class="history-canvas-container">
+                        <canvas id="historyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Sentiment Strength Widget -->
+                <div class="widget sentiment-widget glass-panel">
+                    <h3 class="widget-title">Sentiment Strength</h3>
+                    <div class="sentiment-main">
+                        <span id="sentiment-text" class="sentiment-label">Neutral</span>
+                    </div>
+                    <!-- Strength Meter -->
+                    <div class="strength-meter-container">
+                        <div class="strength-meter-track">
+                            <div class="strength-meter-fill" id="strength-fill"></div>
+                            <div class="strength-meter-pin" id="strength-pin"></div>
+                        </div>
+                        <div class="strength-meter-labels">
+                            <span>Bearish −1</span>
+                            <span>Neutral 0</span>
+                            <span>Bullish +1</span>
+                        </div>
+                    </div>
+                    <p class="sentiment-summary" id="sentiment-summary">Awaiting analysis...</p>
+                </div>
+
+                <!-- Sentiment Chart -->
+                <div class="widget chart-widget glass-panel">
+                    <h3 class="widget-title">News Distribution</h3>
+                    <div class="canvas-container">
+                        <canvas id="sentimentChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Live Feed -->
+                <div class="widget feed-widget glass-panel">
+                    <h3 class="widget-title">Live Feed — News & Social</h3>
+                    <div class="feed-grid" id="news-feed"></div>
+                </div>
+            </div>
+
+            <!-- Welcome State -->
+            <div id="welcome-state" class="welcome-state">
+                <h1>Welcome to StockSense</h1>
+            </div>
+        </main>
+    </div>
+
+    <!-- Floating Chatbot Widget -->
+    <div class="chat-widget-wrapper">
+        <button class="chat-widget-btn" onclick="toggleChat()" aria-label="Open StockBot">💬</button>
+        <span class="chat-widget-label" onclick="toggleChat()">StockBot</span>
+    </div>
+
+    <div class="chat-popup glass-panel" id="chat-popup" role="dialog" aria-label="StockBot Chat">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <span class="chat-avatar">🤖</span>
+                <div>
+                    <h3>StockBot</h3>
+                    <span class="chat-subtitle">AI Stock Analyst</span>
+                </div>
+            </div>
+            <div class="chat-window-controls">
+                <button class="chat-control-btn" onclick="toggleMinimizeChat()" aria-label="Minimize chat">_</button>
+                <button class="chat-control-btn" onclick="toggleMaximizeChat()" aria-label="Maximize chat">□</button>
+                <button class="chat-control-btn close-chat-btn" onclick="toggleChat()" aria-label="Close chat">✖</button>
+            </div>
+        </div>
+        <div class="chat-history" id="chat">
+            <div class="message bot">
+                <p>Hello, I'm <strong>StockBot</strong>! 👋 Search for a stock and then ask me anything — sentiment trends, news analysis, or what the numbers mean!</p>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ask about the stock..." onkeydown="handleEnter(event)">
+            <button onclick="ask()" id="send-btn" aria-label="Send message">➤</button>
+        </div>
+    </div>
+
+    <!-- Help Center Modal -->
+    <div class="modal-overlay" id="help-modal" onclick="closeHelpOnOverlay(event)">
+        <div class="help-modal glass-panel">
+            <div class="help-modal-header">
+                <div>
+                    <h2>📖 How to Read This Dashboard</h2>
+                    <p class="help-subtitle">A beginner's guide to understanding your stock data</p>
+                </div>
+                <button class="close-modal-btn" onclick="toggleHelp()">✖</button>
+            </div>
+
+            <div class="help-modal-body">
+
+                <!-- Price Change Section -->
+                <div class="help-section">
+                    <h3 class="help-section-title">📊 Understanding the Price Change</h3>
+                    <div class="price-change-explainer">
+                        <div class="explainer-example positive-example">
+                            <span class="example-badge positive">▲ Stock is UP</span>
+                            <p>"The stock is up <strong>$6.46 (+2.43%)</strong> today. If you owned <strong>10 shares</strong>, you'd be <strong>$64.60 richer</strong> today — without doing a thing!"</p>
+                        </div>
+                        <div class="explainer-example negative-example">
+                            <span class="example-badge negative">▼ Stock is DOWN</span>
+                            <p>"The stock is down <strong>$3.20 (−1.1%)</strong> today. If you owned <strong>10 shares</strong>, your portfolio dipped <strong>$32.00</strong> — but remember, daily dips are completely normal!"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics Table -->
+                <div class="help-section">
+                    <h3 class="help-section-title">🔢 What Each Number Means</h3>
+                    <table class="help-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>In Simple Words</th>
+                                <th>↑ Goes Up means...</th>
+                                <th>↓ Goes Down means...</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="metric-tag">P/E Ratio</span></td>
+                                <td>How many rupees/dollars you pay for every ₹1 of the company's profit. It's the market's opinion of the company's future.</td>
+                                <td class="positive-cell">😊 Investors are more optimistic and willing to pay a premium for the stock.</td>
+                                <td class="negative-cell">🤔 The stock may be getting cheaper — could be a buying opportunity or a warning sign.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="metric-tag">EPS</span></td>
+                                <td>How much profit the company earned for each share you own. Think of it as your share of the company's paycheck.</td>
+                                <td class="positive-cell">🎉 The company is earning more money — great sign of a healthy, growing business!</td>
+                                <td class="negative-cell">⚠️ The company's profits are shrinking. Worth watching closely if it keeps falling.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="metric-tag">Beta</span></td>
+                                <td>How "wild" or stable the stock's price movements are compared to the overall market. Beta of 1 = moves exactly with the market.</td>
+                                <td class="negative-cell">🎢 The stock swings more than the market — higher potential reward, but also higher risk.</td>
+                                <td class="positive-cell">😌 The stock is becoming more stable and predictable. Lower risk, smoother ride.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="metric-tag">Div Yield</span></td>
+                                <td>The annual cash payment you receive just for holding the stock, shown as a percentage of its price. Free money for loyal holders!</td>
+                                <td class="positive-cell">💰 You earn more passive income per share — great for long-term, income-focused investors.</td>
+                                <td class="negative-cell">📉 The passive income is shrinking. Could mean the company is keeping profits to reinvest in growth.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="metric-tag">52W High/Low</span></td>
+                                <td>The highest and lowest price the stock has touched over the past year — its trading "ceiling" and "floor."</td>
+                                <td class="positive-cell">🚀 Stock is near its yearly best — strong performance, but check if it has more room to grow.</td>
+                                <td class="negative-cell">🛒 Stock is near its yearly worst — could be a discount buying opportunity, or a trend downward.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="metric-tag">Mkt Cap</span></td>
+                                <td>The total value of the entire company in the stock market right now. Large cap = huge company; small cap = smaller company.</td>
+                                <td class="positive-cell">📈 The company is becoming more valuable — investors believe in its future!</td>
+                                <td class="negative-cell">📉 The company's total value is shrinking — worth investigating why.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Sentiment Section -->
+                <div class="help-section">
+                    <h3 class="help-section-title">🧭 Reading the Sentiment Meter</h3>
+                    <div class="sentiment-explainer-grid">
+                        <div class="sentiment-explainer-card positive-card">
+                            <span class="sent-icon">🟢</span>
+                            <strong>Bullish / Positive</strong>
+                            <p>Most news articles and social posts are optimistic about this stock. The crowd thinks it will go up.</p>
+                        </div>
+                        <div class="sentiment-explainer-card neutral-card">
+                            <span class="sent-icon">🟡</span>
+                            <strong>Neutral</strong>
+                            <p>Opinions are mixed — some good news, some bad. A good time to do more research before deciding.</p>
+                        </div>
+                        <div class="sentiment-explainer-card negative-card">
+                            <span class="sent-icon">🔴</span>
+                            <strong>Bearish / Negative</strong>
+                            <p>Most news is pessimistic. The market crowd is cautious. This doesn't always mean "sell" — but pay attention!</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="help-modal-footer">
+                <p>💡 <strong>Tip:</strong> Click the <strong>💬 StockBot</strong> button and ask it to explain any metric in even more detail!</p>
+                <button class="help-close-btn" onclick="toggleHelp()">Got it, Thanks!</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=8.0"></script>
+</body>
+</html>
