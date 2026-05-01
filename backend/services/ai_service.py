@@ -76,7 +76,7 @@ def chatbot(query, context=""):
         return "Got it! If you need anything else—like a stock summary or a term explained—just let me know. Have a great day! 📈"
 
     if query_type == "greeting":
-        return "Hello! I am StockSense AI, your dedicated financial assistant.\n\nI can help you analyze stock charts, explain complex financial terms, or summarize the latest market news. What would you like to explore today?"
+        return "Hello! I am StockBot, your dedicated financial analyst.\n\nI can help you analyze stock charts, explain complex financial terms, or summarize the latest market news. What would you like to explore today?"
 
     # Define system prompt for analysis and safety
     system_prompt = (

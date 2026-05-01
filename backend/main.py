@@ -56,7 +56,7 @@ def chat(data: dict):
     
     # Basic greeting handled by code for speed
     if query in ["hi", "hello", "hey"]:
-        return {"response": "Hello! I am StockSense AI, your dedicated stock analyst. I can help you interpret financial metrics, news sentiment, and stock charts. What can I analyze for you today?"}
+        return {"response": "Hello! I am StockBot, your dedicated stock analyst. I can help you interpret financial metrics, news sentiment, and stock charts. What can I analyze for you today?"}
 
     try:
         response = chatbot(query, context)
