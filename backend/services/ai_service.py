@@ -1,5 +1,6 @@
 import os
 import requests
+import random
 from dotenv import load_dotenv
 
 # Load API key
@@ -9,7 +10,7 @@ api_key = os.getenv("GROQ_API_KEY")
 def get_query_type(query):
     q = query.lower().strip().replace("?", "").replace("!", "")
     # Acknowledgments / Negatives
-    if q in ["ok", "okay", "thanks", "thank you", "got it", "fine", "cool", "perfect", "no", "nope", "nothing", "exit"]:
+    if q in ["ok", "okay", "thanks", "thank you", "got it", "fine", "cool", "perfect", "no", "nope", "nothing", "exit", "awesome", "great"]:
         return "acknowledgment"
     # General greetings
     greetings = {"hi", "hii", "hiii", "hello", "hey", "heyy", "heyya", "helloo", "who are you", "who are u", "what is your name", "whats up"}
@@ -73,7 +74,14 @@ def chatbot(query, context=""):
     query_type = get_query_type(query)
     
     if query_type == "acknowledgment":
-        return "Got it! If you need anything else—like a stock summary or a term explained—just let me know. Have a great day! 📈"
+        responses = [
+            "Got it! Let me know if you need anything else—like a stock summary or a term explained. 📈",
+            "Happy to help! Feel free to ask if you have more questions about the market. 🚀",
+            "Understood. I'm here if you need more analysis or financial insights! 📊",
+            "Perfect. Let me know what we should analyze next! 📉",
+            "Glad I could help. Have a great day of trading! 🌟"
+        ]
+        return random.choice(responses)
 
     if query_type == "greeting":
         return "Hello! I am StockBot, your dedicated financial analyst.\n\nI can help you analyze stock charts, explain complex financial terms, or summarize the latest market news. What would you like to explore today?"
