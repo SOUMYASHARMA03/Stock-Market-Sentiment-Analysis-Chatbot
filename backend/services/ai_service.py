@@ -79,7 +79,14 @@ def chatbot(query, context=""):
             "Happy to help! Feel free to ask if you have more questions about the market. 🚀",
             "Understood. I'm here if you need more analysis or financial insights! 📊",
             "Perfect. Let me know what we should analyze next! 📉",
-            "Glad I could help. Have a great day of trading! 🌟"
+            "Glad I could help. Have a great day of trading! 🌟",
+            "No problem at all! I'm ready for your next financial query whenever you are. 🏦",
+            "Sounds good! I'll be here if you want to deep-dive into another ticker. 🔍",
+            "Anytime! Staying informed is the best strategy. What's next on your radar? 📡",
+            "You're very welcome! Let's keep an eye on those market trends together. 🔝",
+            "Always a pleasure to assist with your market research. Anything else for today? ☕",
+            "Acknowledged. I'm standing by for your next stock or sentiment search! 🔔",
+            "Great! Knowledge is power in the markets. Feel free to keep the questions coming! 🧠"
         ]
         return random.choice(responses)
 
