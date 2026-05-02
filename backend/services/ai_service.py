@@ -91,7 +91,15 @@ def chatbot(query, context=""):
         return random.choice(responses)
 
     if query_type == "greeting":
-        return "Hello! I am StockBot, your dedicated financial analyst.\n\nI can help you analyze stock charts, explain complex financial terms, or summarize the latest market news. What would you like to explore today?"
+        greetings = [
+            "Hello! I am StockBot, your dedicated financial analyst.\n\nI can help you analyze stock charts, explain complex financial terms, or summarize the latest market news. What would you like to explore today?",
+            "Hi there! I'm StockBot. 🤖\n\nI'm ready to help you navigate the markets. Whether you need a deep dive into a ticker or just a quick news summary, I've got you covered. What's on your mind?",
+            "Greetings! StockBot at your service. 🏦\n\nI can interpret charts, analyze sentiment, and break down financial reports for you. Which stock should we look at first?",
+            "Hello! Ready to do some market research? 📈\n\nI'm StockBot, your AI analyst. I can help you understand price movements and news sentiment in seconds. What can I analyze for you today?",
+            "Hey! I'm StockBot, here to help you make sense of the markets. 📊\n\nFrom detailed stock analysis to explaining basic terms, I'm here to help. What would you like to know?",
+            "Welcome! I am StockBot, your personal gateway to market insights. 🔍\n\nI specialize in stock analysis, news summaries, and technical explanations. What ticker are we tracking today?"
+        ]
+        return random.choice(greetings)
 
     # Define system prompt for analysis and safety
     system_prompt = (
