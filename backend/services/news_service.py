@@ -11,7 +11,13 @@ def fetch_news(symbol):
     Fetch news using yfinance as a reliable alternative to Finnhub.
     """
     try:
-        stock = yf.Ticker(symbol)
+        # Create a session with a browser-like User-Agent to avoid blocks on Render
+        session = requests.Session()
+        session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
+        })
+        
+        stock = yf.Ticker(symbol, session=session)
         yf_news = stock.news
         
         if not yf_news:
