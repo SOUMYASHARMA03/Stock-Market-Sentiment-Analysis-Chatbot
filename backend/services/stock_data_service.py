@@ -5,14 +5,30 @@ def fetch_financial_metrics(symbol):
         # Finnhub symbol might be AAPL, but for Indian stocks it's RELIANCE.NS. 
         # yfinance uses Yahoo ticker format. We assume the symbol passed is valid.
         stock = yf.Ticker(symbol)
-        info = stock.info
         
-        # Yahoo finance returns empty dict if the ticker is totally invalid
-        if not info or 'regularMarketPrice' not in info and 'currentPrice' not in info and 'previousClose' not in info:
+        # FALLBACK LOGIC: On cloud servers like Render, .info is often blocked/empty.
+        # We fetch history to get the price reliably.
+        try:
+            hist = stock.history(period="1d")
+        except:
+            hist = None
+            
+        info = stock.info if stock.info else {}
+
+        # If both are empty or unavailable, return None
+        if (hist is None or hist.empty) and not info:
             return None
 
-        current_price = info.get('currentPrice', info.get('regularMarketPrice', 0))
-        prev_close = info.get('previousClose', 0)
+        # Prefer price from history for reliability on cloud
+        if hist is not None and not hist.empty:
+            current_price = hist['Close'].iloc[-1]
+            prev_close = hist['Open'].iloc[-1] # Using daily open as baseline
+        else:
+            current_price = info.get('currentPrice', info.get('regularMarketPrice', 0))
+            prev_close = info.get('previousClose', 0)
+        
+        if current_price == 0:
+            return None
         
         # Calculate percentage change
         change = current_price - prev_close
