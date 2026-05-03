@@ -1,4 +1,10 @@
 from fastapi import FastAPI
+import yfinance as yf
+import os
+
+# Optimize yfinance for cloud deployment
+yf.set_tz_cache_location("cache")
+
 from fastapi.middleware.cors import CORSMiddleware
 from services.news_service import fetch_news, get_stock_symbol
 from services.sentiment_service import analyze_sentiment
