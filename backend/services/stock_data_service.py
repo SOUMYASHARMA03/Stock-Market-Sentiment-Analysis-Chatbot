@@ -1,10 +1,17 @@
 import yfinance as yf
+import requests
 
 def fetch_financial_metrics(symbol):
     try:
+        # Create a session with a browser-like User-Agent to avoid blocks on Render
+        session = requests.Session()
+        session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
+        })
+
         # Finnhub symbol might be AAPL, but for Indian stocks it's RELIANCE.NS. 
         # yfinance uses Yahoo ticker format. We assume the symbol passed is valid.
-        stock = yf.Ticker(symbol)
+        stock = yf.Ticker(symbol, session=session)
         
         # FALLBACK LOGIC: On cloud servers like Render, .info is often blocked/empty.
         # We fetch history to get the price reliably.
