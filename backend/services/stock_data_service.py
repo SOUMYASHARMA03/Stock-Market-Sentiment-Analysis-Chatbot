@@ -1,57 +1,27 @@
 import yfinance as yf
-import requests
 
-# Realistic Mock Data for Demo Mode (Used if yfinance is blocked on cloud servers)
-# We include variations like "APPLE" and "AAPL" to ensure it always works.
+# FINAL DEMO MODE DATA
 MOCK_DATA = {
-    "AAPL": {
-        "price": 172.62, "change": 1.25, "percent_change": 0.73, "open": "171.37",
-        "high": "173.05", "low": "170.65", "pe_ratio": "26.50", "market_cap": "2.65T",
-        "avg_vol": "55.4M", "52_high": "199.62", "52_low": "164.08", "eps": "6.43",
-        "dividend_yield": "0.56%", "beta": "1.28", "currency": "USD"
-    },
-    "APPLE": {
-        "price": 172.62, "change": 1.25, "percent_change": 0.73, "open": "171.37",
-        "high": "173.05", "low": "170.65", "pe_ratio": "26.50", "market_cap": "2.65T",
-        "avg_vol": "55.4M", "52_high": "199.62", "52_low": "164.08", "eps": "6.43",
-        "dividend_yield": "0.56%", "beta": "1.28", "currency": "USD"
-    },
-    "TSLA": {
-        "price": 168.47, "change": -3.12, "percent_change": -1.82, "open": "170.20",
-        "high": "171.50", "low": "167.30", "pe_ratio": "42.10", "market_cap": "536B",
-        "avg_vol": "102M", "52_high": "299.29", "52_low": "152.37", "eps": "4.30",
-        "dividend_yield": "N/A", "beta": "2.42", "currency": "USD"
-    },
-    "TESLA": {
-        "price": 168.47, "change": -3.12, "percent_change": -1.82, "open": "170.20",
-        "high": "171.50", "low": "167.30", "pe_ratio": "42.10", "market_cap": "536B",
-        "avg_vol": "102M", "52_high": "299.29", "52_low": "152.37", "eps": "4.30",
-        "dividend_yield": "N/A", "beta": "2.42", "currency": "USD"
-    },
-    "RELIANCE": {
-        "price": 2940.50, "change": 15.20, "percent_change": 0.52, "open": "2925.30",
-        "high": "2955.00", "low": "2920.00", "pe_ratio": "28.40", "market_cap": "19.8T",
-        "avg_vol": "4.2M", "52_high": "3024.90", "52_low": "2210.00", "eps": "104.20",
-        "dividend_yield": "0.31%", "beta": "0.95", "currency": "INR"
-    },
-    "RELIANCE.NS": {
-        "price": 2940.50, "change": 15.20, "percent_change": 0.52, "open": "2925.30",
-        "high": "2955.00", "low": "2920.00", "pe_ratio": "28.40", "market_cap": "19.8T",
-        "avg_vol": "4.2M", "52_high": "3024.90", "52_low": "2210.00", "eps": "104.20",
-        "dividend_yield": "0.31%", "beta": "0.95", "currency": "INR"
-    }
+    "AAPL": {"price": 182.52, "change": 1.45, "percent_change": 0.80, "open": "181.20", "high": "183.10", "low": "180.50", "pe_ratio": "28.40", "market_cap": "2.82T", "avg_vol": "52.1M", "52_high": "199.62", "52_low": "164.08", "eps": "6.43", "dividend_yield": "0.54%", "beta": "1.28", "currency": "USD"},
+    "APPLE": {"price": 182.52, "change": 1.45, "percent_change": 0.80, "open": "181.20", "high": "183.10", "low": "180.50", "pe_ratio": "28.40", "market_cap": "2.82T", "avg_vol": "52.1M", "52_high": "199.62", "52_low": "164.08", "eps": "6.43", "dividend_yield": "0.54%", "beta": "1.28", "currency": "USD"},
+    "TSLA": {"price": 174.50, "change": -2.30, "percent_change": -1.30, "open": "176.10", "high": "177.50", "low": "172.30", "pe_ratio": "45.20", "market_cap": "552B", "avg_vol": "98.4M", "52_high": "299.29", "52_low": "138.80", "eps": "4.30", "dividend_yield": "N/A", "beta": "2.42", "currency": "USD"},
+    "TESLA": {"price": 174.50, "change": -2.30, "percent_change": -1.30, "open": "176.10", "high": "177.50", "low": "172.30", "pe_ratio": "45.20", "market_cap": "552B", "avg_vol": "98.4M", "52_high": "299.29", "52_low": "138.80", "eps": "4.30", "dividend_yield": "N/A", "beta": "2.42", "currency": "USD"},
+    "MSFT": {"price": 415.20, "change": 4.15, "percent_change": 1.01, "open": "411.30", "high": "417.50", "low": "410.80", "pe_ratio": "36.80", "market_cap": "3.12T", "avg_vol": "22.5M", "52_high": "430.82", "52_low": "301.20", "eps": "11.07", "dividend_yield": "0.72%", "beta": "0.90", "currency": "USD"},
+    "MICROSOFT": {"price": 415.20, "change": 4.15, "percent_change": 1.01, "open": "411.30", "high": "417.50", "low": "410.80", "pe_ratio": "36.80", "market_cap": "3.12T", "avg_vol": "22.5M", "52_high": "430.82", "52_low": "301.20", "eps": "11.07", "dividend_yield": "0.72%", "beta": "0.90", "currency": "USD"},
+    "RELIANCE": {"price": 2940.50, "change": 15.20, "percent_change": 0.52, "open": "2925.30", "high": "2955.00", "low": "2920.00", "pe_ratio": "28.40", "market_cap": "19.8T", "avg_vol": "4.2M", "52_high": "3024.90", "52_low": "2210.00", "eps": "104.20", "dividend_yield": "0.31%", "beta": "0.95", "currency": "INR"},
+    "RELIANCE.NS": {"price": 2940.50, "change": 15.20, "percent_change": 0.52, "open": "2925.30", "high": "2955.00", "low": "2920.00", "pe_ratio": "28.40", "market_cap": "19.8T", "avg_vol": "4.2M", "52_high": "3024.90", "52_low": "2210.00", "eps": "104.20", "dividend_yield": "0.31%", "beta": "0.95", "currency": "INR"},
+    "MARUTI": {"price": 12650.00, "change": 145.00, "percent_change": 1.16, "open": "12505.00", "high": "12700.00", "low": "12480.00", "pe_ratio": "29.20", "market_cap": "3.9T", "avg_vol": "0.6M", "52_high": "13000.00", "52_low": "8100.00", "eps": "435.00", "dividend_yield": "0.75%", "beta": "0.85", "currency": "INR"},
+    "MARUTI.NS": {"price": 12650.00, "change": 145.00, "percent_change": 1.16, "open": "12505.00", "high": "12700.00", "low": "12480.00", "pe_ratio": "29.20", "market_cap": "3.9T", "avg_vol": "0.6M", "52_high": "13000.00", "52_low": "8100.00", "eps": "435.00", "dividend_yield": "0.75%", "beta": "0.85", "currency": "INR"}
 }
 
 def fetch_financial_metrics(symbol):
     try:
+        # Standard Fetch
         stock = yf.Ticker(symbol)
         
-        # Try fetching via history first
-        try:
-            hist = stock.history(period="1d")
-        except:
-            hist = None
-            
+        # Try history first (more reliable)
+        hist = stock.history(period="1d")
+        
         current_price = 0
         prev_close = 0
         
@@ -59,6 +29,7 @@ def fetch_financial_metrics(symbol):
             current_price = hist['Close'].iloc[-1]
             prev_close = hist['Open'].iloc[-1]
         else:
+            # Try info as backup
             try:
                 info = stock.info if stock.info else {}
                 current_price = info.get('currentPrice', info.get('regularMarketPrice', 0))
@@ -66,17 +37,19 @@ def fetch_financial_metrics(symbol):
             except:
                 pass
 
-        # MOCK DATA FALLBACK: If API fails, check our demo list
+        # MOCK DATA TRIGGER: If price is 0 or API failed, check our Demo Mode list
         if not current_price or current_price == 0:
-            print(f"DEBUG: yfinance blocked. Falling back to Mock Data for {symbol}")
-            clean_symbol = symbol.upper().split('.')[0]
-            return MOCK_DATA.get(clean_symbol, MOCK_DATA.get(symbol.upper()))
+            clean_symbol = symbol.upper().split('.')[0] # Turns "RELIANCE.NS" into "RELIANCE"
+            mock = MOCK_DATA.get(clean_symbol, MOCK_DATA.get(symbol.upper()))
+            if mock:
+                print(f"DEBUG: yfinance blocked. Falling back to Mock Data for {symbol}")
+                return mock
+            return None
 
-        # If we got real data, format and return it
+        # Format and Return Real Data
         change = current_price - prev_close
         percent_change = (change / prev_close * 100) if prev_close else 0
 
-        # Format large numbers
         def format_large_number(num):
             if num is None: return "N/A"
             if num >= 1e12: return f"{num/1e12:.2f}T"
@@ -87,7 +60,6 @@ def fetch_financial_metrics(symbol):
         def f_2(num):
             return f"{num:.2f}" if isinstance(num, (int, float)) else 'N/A'
 
-        # Attempt to get extra info if available, otherwise use defaults
         try:
             info = stock.info if stock.info else {}
         except:
@@ -112,6 +84,5 @@ def fetch_financial_metrics(symbol):
         }
     except Exception as e:
         print(f"Error in fetch_financial_metrics: {e}")
-        # Final desperate fallback to Mock Data
         clean_symbol = symbol.upper().split('.')[0]
         return MOCK_DATA.get(clean_symbol, MOCK_DATA.get(symbol.upper()))

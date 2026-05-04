@@ -7,4 +7,3 @@ python-dotenv
 pydantic
 praw
 yfinance
-curl_cffi

@@ -1,10 +1,4 @@
 from fastapi import FastAPI
-import yfinance as yf
-import os
-
-# Optimize yfinance for cloud deployment
-yf.set_tz_cache_location("cache")
-
 from fastapi.middleware.cors import CORSMiddleware
 from services.news_service import fetch_news, get_stock_symbol
 from services.sentiment_service import analyze_sentiment
@@ -62,7 +56,7 @@ def chat(data: dict):
     
     # Basic greeting handled by code for speed
     if query in ["hi", "hello", "hey"]:
-        return {"response": "Hello! I am StockBot, your dedicated stock analyst. I can help you interpret financial metrics, news sentiment, and stock charts. What can I analyze for you today?"}
+        return {"response": "Hello! I am StockSense AI, your dedicated stock analyst. I can help you interpret financial metrics, news sentiment, and stock charts. What can I analyze for you today?"}
 
     try:
         response = chatbot(query, context)
