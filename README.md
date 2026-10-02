@@ -30,7 +30,7 @@ An **AI-powered stock market chatbot** that combines **LLaMA-3, Natural Language
 
 The objective of this project is to integrate **Artificial Intelligence, Natural Language Processing, sentiment analysis, and real-time financial data** into a single interactive platform. It helps users explore stock market information, retrieve company-specific data, access financial news, and understand the overall sentiment associated with market-related news.
 
-## Key Functionality
+## Key Functionality 
 
 The chatbot accepts **natural-language queries** related to selected companies or stocks. Based on the query, the system retrieves relevant **stock prices, company information, and financial news** through integrated financial APIs.
 
